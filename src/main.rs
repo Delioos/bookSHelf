@@ -1,7 +1,5 @@
-use std::fs;
-use std::path::PathBuf;
 use std::process::Command;
-use walkdir::{DirEntry, WalkDir};
+use walkdir::WalkDir;
 use regex::Regex;
 
 fn main() {
@@ -16,14 +14,16 @@ fn main() {
 
     println!("Liste des PDF:");
     for (index, pdf) in pdfs.clone().into_iter().enumerate() {
-        println!("{}: {}", index + 1, pdf.path().display());
+        let path = pdf.path().display().to_string();
+        let trimmed_path = &path[2..];
+        println!("{}: {}", index + 1, trimmed_path );
     }
 
     // Attendre que l'utilisateur entre un index
     println!("Entrez l'index du PDF que vous souhaitez ouvrir:");
     let mut input = String::new();
     std::io::stdin().read_line(&mut input).expect("Erreur lors de la lecture de l'entrée");
-    let index: usize = input.trim().parse().expect("Entrée invalide") - 1; // reduce by 1 to get the correct index
+    let index: usize = input.trim().parse::<usize>().expect("Entrée invalide") - 1; // Correction ici
 
     // Ouvrir le PDF dans Firefox
     let path_to_pdf = &pdfs[index].path().display().to_string();
