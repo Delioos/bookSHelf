@@ -1,8 +1,22 @@
 use std::process::Command;
-use walkdir::WalkDir;
+use walkdir::{DirEntry, WalkDir};
 use regex::Regex;
 
 fn main() {
+    let pdfs = get_current_dir_pdfs();
+
+    // Attendre que l'utilisateur entre un index
+    println!("Entrez l'index du PDF que vous souhaitez ouvrir:");
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input).expect("Erreur lors de la lecture de l'entrée");
+    let index: usize = input.trim().parse::<usize>().expect("Entrée invalide") - 1; // Correction ici
+
+    // Ouvrir le PDF dans Firefox
+    let path_to_pdf = &pdfs[index].path().display().to_string();
+    open_pdf(path_to_pdf);
+}
+
+fn get_current_dir_pdfs() -> Vec<DirEntry> {
     let re = Regex::new(r".*\.pdf$").unwrap();
     let mut pdfs = Vec::new();
 
@@ -16,17 +30,12 @@ fn main() {
     for (index, pdf) in pdfs.clone().into_iter().enumerate() {
         let path = pdf.path().display().to_string();
         let trimmed_path = &path[2..];
-        println!("{}: {}", index + 1, trimmed_path );
+        println!("{}: {}", index + 1, trimmed_path);
     }
+    pdfs
+}
 
-    // Attendre que l'utilisateur entre un index
-    println!("Entrez l'index du PDF que vous souhaitez ouvrir:");
-    let mut input = String::new();
-    std::io::stdin().read_line(&mut input).expect("Erreur lors de la lecture de l'entrée");
-    let index: usize = input.trim().parse::<usize>().expect("Entrée invalide") - 1; // Correction ici
-
-    // Ouvrir le PDF dans Firefox
-    let path_to_pdf = &pdfs[index].path().display().to_string();
+fn open_pdf(path_to_pdf: &String) -> () {
     Command::new("firefox")
         .arg(path_to_pdf)
         .spawn()
