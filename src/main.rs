@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::process::Command;
 use walkdir::{DirEntry, WalkDir};
 use regex::Regex;
@@ -13,7 +14,27 @@ use regex::Regex;
 
 fn main() {
     let dir :&str = "books";
+    while true {
+        user_action();
+    }
+
     display_dir(dir);
+
+}
+
+fn user_action() {
+    println!("Enter a command : ");
+
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input).unwrap();
+    let input = input.trim();
+
+    match input {
+        "q" => quit(),
+        "h" => help(),
+        _ => println!("Command not found"),
+    }
+
 }
 
 fn display_dir(dir: &str) {
@@ -67,4 +88,13 @@ fn get_books(dir: &str) -> Vec<DirEntry>{
 fn is_book(e: &DirEntry) -> bool {
     let re = Regex::new(r".pdf$  | .md$ | .epub$ |").unwrap();
     re.is_match(e.path().to_str().unwrap())
+}
+
+
+fn help() {
+        println!(" bibliotheue super cool, faire un hashset pour les commades pour faire des trucs propre / utiliser le truc de base de rust pour faire un cli super carré mais en vrai je ferais ca plus tard j veux apprendre sur le tasé");
+}
+fn quit() {
+    println!("Ciao !");
+    std::process::exit(0);
 }
